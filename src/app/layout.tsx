@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Toaster } from "sonner";
+import { AppShell } from "@/components/app-shell";
+import { themeInitScript } from "@/components/theme-toggle";
 import "./globals.css";
 
 const plexArabic = IBM_Plex_Sans_Arabic({
@@ -19,7 +22,13 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ar" dir="rtl" className={plexArabic.variable}>
-      <body>{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body>
+        <AppShell>{children}</AppShell>
+        <Toaster position="top-center" dir="rtl" richColors closeButton />
+      </body>
     </html>
   );
 }

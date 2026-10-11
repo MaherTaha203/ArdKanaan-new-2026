@@ -1,27 +1,23 @@
-import { GraduationCap, BookOpen, ClipboardCheck, Clock } from "lucide-react";
+import { GraduationCap, BookOpen, ClipboardCheck, Clock, TriangleAlert } from "lucide-react";
+import { Card, CardTitle } from "@/components/ui/card";
+import { EnrollmentsChart } from "@/components/enrollments-chart";
+import { dashboardKpis, reviewAlerts } from "@/lib/sample-data";
 
-type Kpi = {
-  label: string;
-  value: string;
-  foot: string;
-  tone: "success" | "primary" | "info" | "warning";
-  Icon: typeof GraduationCap;
-};
+type Tone = "success" | "primary" | "info" | "warning";
 
-// بيانات توضيحية للسقالة فقط — لا تتصل بقاعدة بيانات بعد.
-const KPIS: Kpi[] = [
-  { label: "الطلاب النشطون", value: "248", foot: "من إجمالي 271 طالبًا", tone: "success", Icon: GraduationCap },
-  { label: "الدورات المفتوحة", value: "12", foot: "من إجمالي 34 دورة", tone: "primary", Icon: BookOpen },
-  { label: "التسجيلات النشطة", value: "419", foot: "موزّعة على 12 دورة", tone: "info", Icon: ClipboardCheck },
-  { label: "دورات تنتهي قريبًا", value: "3", foot: "خلال 30 يومًا", tone: "warning", Icon: Clock },
-];
-
-const TONE_BG: Record<Kpi["tone"], string> = {
+const TONE_BG: Record<Tone, string> = {
   success: "bg-success",
   primary: "bg-primary",
   info: "bg-info",
   warning: "bg-warning",
 };
+
+const kpis: { label: string; value: string; foot: string; tone: Tone; Icon: typeof GraduationCap }[] = [
+  { label: "الطلاب النشطون", value: String(dashboardKpis.activeStudents), foot: `من إجمالي ${dashboardKpis.totalStudents} طالبًا`, tone: "success", Icon: GraduationCap },
+  { label: "الدورات المفتوحة", value: String(dashboardKpis.openCourses), foot: `من إجمالي ${dashboardKpis.totalCourses} دورة`, tone: "primary", Icon: BookOpen },
+  { label: "التسجيلات النشطة", value: String(dashboardKpis.activeEnrollments), foot: "موزّعة على الدورات المفتوحة", tone: "info", Icon: ClipboardCheck },
+  { label: "دورات تنتهي قريبًا", value: String(dashboardKpis.endingSoon), foot: "خلال 30 يومًا القادمة", tone: "warning", Icon: Clock },
+];
 
 export default function DashboardPage() {
   return (
@@ -34,16 +30,13 @@ export default function DashboardPage() {
           </p>
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-warning/30 bg-warning/10 px-3 py-1 text-xs font-semibold text-warning">
-          بيانات توضيحية للسقالة
+          <TriangleAlert size={13} /> بيانات توضيحية للنموذج الأولي
         </span>
       </header>
 
       <section className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-        {KPIS.map(({ label, value, foot, tone, Icon }) => (
-          <article
-            key={label}
-            className="flex flex-col gap-2.5 rounded-xl border border-border bg-card p-[18px] shadow-sm"
-          >
+        {kpis.map(({ label, value, foot, tone, Icon }) => (
+          <Card key={label} className="flex flex-col gap-2.5">
             <div className="flex items-center gap-2 text-[13px] font-semibold text-muted-foreground">
               <span className={`grid size-[30px] place-items-center rounded-lg text-white ${TONE_BG[tone]}`}>
                 <Icon size={17} strokeWidth={2.2} />
@@ -52,14 +45,37 @@ export default function DashboardPage() {
             </div>
             <div className="tabular text-3xl font-bold leading-none">{value}</div>
             <div className="tabular text-xs text-muted-foreground">{foot}</div>
-          </article>
+          </Card>
         ))}
       </section>
 
-      <p className="mt-7 text-center text-xs text-muted-foreground">
-        سقالة الواجهة الأولية — ترجمة توكنات <code>docs/DESIGN_TOKENS.md</code> إلى تطبيق Next.js.
-        الشاشات الكاملة (الطلاب، الدورات، النسخ الاحتياطي) تُبنى بعد اعتماد النموذج الأولي.
-      </p>
+      <section className="mt-4 grid grid-cols-1 gap-3.5 lg:grid-cols-[1.4fr_1fr]">
+        <Card>
+          <CardTitle className="mb-3.5">
+            التسجيلات النشطة الجديدة
+            <span className="ms-2 text-[13px] font-normal text-muted-foreground">آخر 6 أشهر</span>
+          </CardTitle>
+          <EnrollmentsChart />
+        </Card>
+
+        <Card>
+          <CardTitle className="mb-3.5">دورات تحتاج مراجعة</CardTitle>
+          <ul>
+            {reviewAlerts.map((a) => (
+              <li
+                key={a.name}
+                className="flex items-center gap-3 border-b border-border py-2.5 last:border-b-0"
+              >
+                <span
+                  className={`size-2.5 shrink-0 rounded-full ${a.kind === "danger" ? "bg-destructive" : "bg-warning"}`}
+                />
+                <span className="text-sm font-semibold">{a.name}</span>
+                <span className="tabular ms-auto text-start text-xs text-muted-foreground">{a.meta}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </section>
     </main>
   );
 }
