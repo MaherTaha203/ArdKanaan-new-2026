@@ -2,12 +2,12 @@
 
 import * as React from "react";
 import { Search, Plus, Eye, Pencil } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { StudentFormDialog } from "@/components/forms/student-form";
 import { StudentStatusBadge, EnrollmentStatusBadge } from "@/components/status-badge";
 import { cn } from "@/lib/utils";
 import {
@@ -29,6 +29,17 @@ export default function StudentsPage() {
   const [query, setQuery] = React.useState("");
   const [filter, setFilter] = React.useState<Filter>("all");
   const [selected, setSelected] = React.useState<Student | null>(null);
+  const [formOpen, setFormOpen] = React.useState(false);
+  const [editing, setEditing] = React.useState<Student | null>(null);
+
+  function openNew() {
+    setEditing(null);
+    setFormOpen(true);
+  }
+  function openEdit(s: Student) {
+    setEditing(s);
+    setFormOpen(true);
+  }
 
   const rows = React.useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -48,7 +59,7 @@ export default function StudentsPage() {
             البحث بالرقم التلقائي أو اليدوي أو الاسم أو الهاتف
           </p>
         </div>
-        <Button onClick={() => toast.info("إضافة طالب — سيُفعَّل بعد ربط قاعدة البيانات")}>
+        <Button onClick={openNew}>
           <Plus /> طالب جديد
         </Button>
       </header>
@@ -119,7 +130,7 @@ export default function StudentsPage() {
                     <IconAction label="عرض التسجيلات" onClick={() => setSelected(s)}>
                       <Eye size={16} />
                     </IconAction>
-                    <IconAction label="تعديل" onClick={() => toast.info("تعديل الطالب — لاحقًا")}>
+                    <IconAction label="تعديل" onClick={() => openEdit(s)}>
                       <Pencil size={16} />
                     </IconAction>
                   </div>
@@ -167,6 +178,8 @@ export default function StudentsPage() {
           </DialogContent>
         )}
       </Dialog>
+
+      <StudentFormDialog open={formOpen} onOpenChange={setFormOpen} student={editing} />
     </main>
   );
 }

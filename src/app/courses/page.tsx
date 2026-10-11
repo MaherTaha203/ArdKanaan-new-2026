@@ -1,15 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { Search, Plus } from "lucide-react";
-import { toast } from "sonner";
+import { Search, Plus, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
+import { CourseFormDialog } from "@/components/forms/course-form";
 import { CourseStatusBadge } from "@/components/status-badge";
 import { cn } from "@/lib/utils";
-import { courses, type CourseStatus } from "@/lib/sample-data";
+import { courses, type Course, type CourseStatus } from "@/lib/sample-data";
 
 type Filter = "all" | CourseStatus;
 
@@ -22,6 +22,17 @@ const FILTERS: { key: Filter; label: string }[] = [
 export default function CoursesPage() {
   const [query, setQuery] = React.useState("");
   const [filter, setFilter] = React.useState<Filter>("all");
+  const [formOpen, setFormOpen] = React.useState(false);
+  const [editing, setEditing] = React.useState<Course | null>(null);
+
+  function openNew() {
+    setEditing(null);
+    setFormOpen(true);
+  }
+  function openEdit(c: Course) {
+    setEditing(c);
+    setFormOpen(true);
+  }
 
   const rows = React.useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -39,7 +50,7 @@ export default function CoursesPage() {
           <h1 className="text-2xl font-bold">إدارة الدورات</h1>
           <p className="mt-1 text-sm text-muted-foreground">البحث باسم الدورة مع التصفية حسب الحالة</p>
         </div>
-        <Button onClick={() => toast.info("إضافة دورة — سيُفعَّل بعد ربط قاعدة البيانات")}>
+        <Button onClick={openNew}>
           <Plus /> دورة جديدة
         </Button>
       </header>
@@ -90,6 +101,7 @@ export default function CoursesPage() {
               <TH>تاريخ النهاية</TH>
               <TH>التسجيلات النشطة</TH>
               <TH>الحالة</TH>
+              <TH> </TH>
             </TR>
           </THead>
           <TBody>
@@ -101,6 +113,18 @@ export default function CoursesPage() {
                 <TD className="tabular">{c.endDate}</TD>
                 <TD className="tabular">{c.activeEnrollments}</TD>
                 <TD><CourseStatusBadge status={c.status} /></TD>
+                <TD>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      aria-label="تعديل"
+                      onClick={() => openEdit(c)}
+                      className="grid size-8 place-items-center rounded-lg border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                  </div>
+                </TD>
               </TR>
             ))}
           </TBody>
@@ -120,6 +144,9 @@ export default function CoursesPage() {
             <Row label="البداية" value={c.startDate} />
             <Row label="النهاية" value={c.endDate} />
             <Row label="التسجيلات النشطة" value={String(c.activeEnrollments)} />
+            <Button variant="ghost" className="mt-2.5 w-full" onClick={() => openEdit(c)}>
+              <Pencil size={16} /> تعديل
+            </Button>
           </Card>
         ))}
       </div>
@@ -131,6 +158,8 @@ export default function CoursesPage() {
       <p className="mt-7 text-center text-xs text-muted-foreground">
         عدد التسجيلات النشطة قيمة محسوبة من التسجيلات، وليست رقمًا يدويًا.
       </p>
+
+      <CourseFormDialog open={formOpen} onOpenChange={setFormOpen} course={editing} />
     </main>
   );
 }
