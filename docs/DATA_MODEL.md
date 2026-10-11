@@ -54,7 +54,6 @@
 | registration_date | نعم | تاريخ التسجيل |
 | status | نعم | active أو completed أو withdrawn أو cancelled |
 | created_at | نعم | وقت إنشاء سجل النظام، حقل داخلي غير معروض للمستخدم |
-| created_at | نعم | وقت إنشاء سجل النظام |
 | updated_at | نعم | وقت آخر تحديث ناجح |
 
 قواعد:
