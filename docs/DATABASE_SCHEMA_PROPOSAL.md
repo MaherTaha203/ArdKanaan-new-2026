@@ -73,7 +73,7 @@
 | course_id | uuid | لا | مفتاح أجنبي إلى courses.id. |
 | status | قيمة محددة | لا | active أو completed أو withdrawn أو cancelled. |
 | enrolled_at | timestamptz | لا | وقت التسجيل الفعلي، افتراضيًا من قاعدة البيانات. |
-| notes | text | نعم | ملاحظات اختيارية. |
+| notes | text | نعم | ملاحظات اختيارية؛ الحد الأقصى 1000 حرف، وتُرفض القيم الأطول ولا تُقص. |
 | created_at | timestamptz | لا | وقت إنشاء السجل. |
 | updated_at | timestamptz | لا | وقت آخر تعديل. |
 
