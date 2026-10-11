@@ -54,7 +54,8 @@
 | الحقل المنطقي | مطلوب | القاعدة |
 |---|---|---|
 | id | نعم | معرّف ثابت وفريد |
-| student_id | نعم | مفتاح أجنبي إلى students.id |
+| student_id | نعم | الطالب الأساسي الحالي الذي يُنسب إليه التسجيل بعد الدمج |
+| original_student_id | نعم | الطالب الذي أُنشئ التسجيل له أول مرة؛ ثابت ولا يتغير عند الدمج |
 | course_id | نعم | مفتاح أجنبي إلى courses.id |
 | registration_date | نعم | تاريخ التسجيل |
 | status | نعم | active أو completed أو withdrawn أو cancelled |
