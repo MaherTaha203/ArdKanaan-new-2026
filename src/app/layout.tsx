@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Cairo } from "next/font/google";
 import { Toaster } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { themeInitScript } from "@/components/theme-toggle";
 import "./globals.css";
 
-const plexArabic = IBM_Plex_Sans_Arabic({
+// اتجاه "تعبيري مع انضباط مينيمال": خط Cairo الهندسي المريح (يدعم العربية واللاتينية).
+const cairo = Cairo({
   subsets: ["arabic", "latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-plex-arabic",
+  variable: "--font-cairo",
   display: "swap",
 });
 
@@ -21,7 +22,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ar" dir="rtl" className={plexArabic.variable}>
+    <html lang="ar" dir="rtl" className={cairo.variable}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
